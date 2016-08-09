@@ -1,23 +1,36 @@
-sudo: false
-language: python
+sudo: required
+dist: trusty
+language: generic
 
-branches:
-  except:
-    - gh-pages
-
-python:
-  - 2.7
-  # Tests hang !
-  #- 3.4
-
-  #- pypy
-  #- pypy3
+env:
+  # This will check any ROS distro supported on this OS
+  - $CI_ROS_DISTRO=indigo
+  - $CI_ROS_DISTRO=jade
 
 install:
-  - pip install tox tox-travis
-
+# Add ROS repositories
+  - sudo sh -c 'echo "deb http://packages.ros.org/ros-shadow-fixed/ubuntu trusty main" > /etc/apt/sources.list.d/ros-latest.list'
+  - wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
+  - sudo apt-get update
+# Install and initialize rosdep
+  - sudo apt-get install python-rosdep -y
+  - sudo `which rosdep` init
+  - rosdep update
+# Use rosdep to install pyros-setup's dependencies
+  - rosdep install --default-yes --from-paths ./ --rosdistro $CI_ROS_DISTRO
 script:
-  - tox
-
+# full ROS setup, build and test
+  - source /opt/ros/$CI_ROS_DISTRO/setup.bash
+  - mkdir build
+  - cd build
+  - cmake .. -DCMAKE_INSTALL_PREFIX=./install
+  - make -j1
+  - source devel/setup.bash
+  - make -j1 tests
+  - make -j1 run_tests
+  - catkin_test_results .
+  - source install/setup.bash
+  - make -j1 install
+  - pytest --pyargs pyzmp
 notifications:
   email: false
