@@ -4,10 +4,10 @@ language: generic
 
 env:
   # This will check any ROS distro supported on this OS
-  - CI_ROS_DISTRO=indigo
-  - CI_ROS_DISTRO=jade
-  - ROS_FLOW=devel
-  - ROS_FLOW=install
+  - CI_ROS_DISTRO=indigo ROS_FLOW=devel
+  - CI_ROS_DISTRO=indigo ROS_FLOW=install
+  - CI_ROS_DISTRO=jade ROS_FLOW=devel
+  - CI_ROS_DISTRO=jade ROS_FLOW=install
 
 install:
 # Add ROS repositories
