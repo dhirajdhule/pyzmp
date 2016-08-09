@@ -20,6 +20,8 @@ install:
   - rosdep update
 # Use rosdep to install pyros-setup's dependencies
   - rosdep install --default-yes --from-paths ./ --rosdistro $CI_ROS_DISTRO
+# TMP : to install missing dependencies
+  - sudo apt-get install ros-indigo-rospack -y
 
 script:
   # full ROS setup, build and test
